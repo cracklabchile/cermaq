@@ -4,10 +4,14 @@ const ASSETS = [
     './index.html',
     './style.css',
     './app.js',
+    './Cermaq_logo.png',
     './Q.png',
+    './manifest.json',
     'https://unpkg.com/html5-qrcode',
     'https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js',
-    'https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap'
+    'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js',
+    'https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap',
+    'https://fonts.googleapis.com/icon?family=Material+Icons+Round'
 ];
 
 self.addEventListener('install', (e) => {
