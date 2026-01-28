@@ -103,10 +103,16 @@
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Product Modal -->
+    <!-- Product Modal -->
     <div class="modal-backdrop" id="modal-product">
         <div class="modal-content">
             <div class="product-header">
-                <h2 id="p-name">Cargando...</h2>
+                <!-- Editable Name Field -->
+                <label class="input-label" style="font-size:0.8rem; color:var(--text-light);">Descripción /
+                    Nombre</label>
+                <textarea id="p-name-input" class="input-field" rows="2"
+                    style="font-weight:700; font-size:1.2rem; margin-bottom:0.5rem; resize:none;"></textarea>
+
                 <div class="product-meta">ID: <span id="p-id">-</span></div>
             </div>
 

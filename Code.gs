@@ -102,6 +102,11 @@ function procesarMovimiento(datos) {
   
   // Guardamos el nuevo stock
   celdaStock.setValue(nuevoStock);
+
+  // ACTUALIZAR NOMBRE SI SE PROPORCIONA (Requisito User: "poder editar el nombre")
+  if (datos.nombre && datos.nombre !== data[filaEncontrada-1][KOL.NOMBRE]) {
+    sheet.getRange(filaEncontrada, KOL.NOMBRE + 1).setValue(datos.nombre);
+  }
   
   // Registramos en el Historial
   if (logSheet) {

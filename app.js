@@ -227,7 +227,8 @@ function addToCart(type) {
 
     const qty = parseInt(document.getElementById('qty-input').value);
     const id = currentProduct.id;
-    const name = currentProduct.nombre;
+    // Capture edited name
+    const name = document.getElementById('p-name-input').value || currentProduct.nombre;
     const comment = document.getElementById('tx-comment').value;
     const price = document.getElementById('tx-price').value;
 
@@ -332,7 +333,8 @@ async function processCart() {
                 quantity: item.qty,
                 user: "WebUser",
                 comment: item.comment || "",
-                price: item.price || ""
+                price: item.price || "",
+                nombre: item.name // SEND NAME TO UPDATE IF CHANGED
             });
 
             if (result.status === 'success') {
@@ -599,7 +601,8 @@ async function openProductModal(idOrData) {
     currentProduct = product;
 
     // UI
-    document.getElementById('p-name').innerText = product.nombre;
+    // Update Input instead of H2
+    document.getElementById('p-name-input').value = product.nombre;
     document.getElementById('p-id').innerText = product.id;
     document.getElementById('p-stock').innerText = product.stock;
 
