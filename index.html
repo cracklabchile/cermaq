@@ -33,21 +33,19 @@
 <body>
 
     <nav>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <img src="Cermaq_logo.png" alt="Logo" class="nav-logo">
-            <h1>CERMAQ</h1>
-        </div>
-        <div class="status-pill">
-            <span id="status-dot" class="dot"></span>
-            <span id="status-text">Iniciando...</span>
-        </div>
+        <img src="Cermaq_logo.png" alt="Logo" class="nav-logo">
         <button class="icon-btn" id="btn-admin-login" onclick="toggleAdmin()">
             <span class="material-icons-round">admin_panel_settings</span>
         </button>
-        <!-- Install button removed from header -->
     </nav>
 
     <main>
+        <!-- Status Indicator Centered -->
+        <div class="status-pill" style="margin: 0 auto;">
+            <span id="status-dot" class="dot"></span>
+            <span id="status-text">Iniciando...</span>
+        </div>
+
         <!-- Scanner Section -->
         <div class="card">
             <div class="scanner-wrapper">

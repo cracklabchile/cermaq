@@ -45,8 +45,10 @@ nav {
     -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--glass-border);
     padding: 1rem 1.5rem;
+    padding: 1rem 1.5rem;
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
+    /* Centered Logo */
     align-items: center;
     position: sticky;
     top: 0;
@@ -55,14 +57,17 @@ nav {
 }
 
 nav h1 {
-    margin: 0;
-    font-size: 1.25rem;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    color: var(--primary);
+    display: none;
+    /* Hide H1 */
 }
+
+#btn-admin-login {
+    position: absolute;
+    right: 1.5rem;
+    /* Anchor to right */
+}
+
+
 
 /* Reduced logo size for mobile */
 .nav-logo {
@@ -150,9 +155,13 @@ main {
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--text-light);
+    font-weight: 500;
+    color: var(--text-light);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    margin: 0 auto;
     border: 1px solid white;
+    /* Spacing for new location */
+    margin-bottom: 1rem;
+    align-self: center;
 }
 
 .dot {
