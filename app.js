@@ -669,15 +669,23 @@ function handleSearch() {
     }
 }
 
-// Install PWA
+// Install PWA Logic
 let deferredPrompt;
+
+// 1. Listen for the browser event
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    // Show universally at the bottom
+    // It's already visible in HTML, but we ensure it
     const installContainer = document.getElementById('install-container');
     if (installContainer) installContainer.style.display = 'block';
 });
+
+// 2. Hide if already installed (Standalone mode)
+if (window.matchMedia('(display-mode: standalone)').matches) {
+    const installContainer = document.getElementById('install-container');
+    if (installContainer) installContainer.style.display = 'none';
+}
 
 async function installPWA() {
     if (deferredPrompt) {
@@ -685,5 +693,9 @@ async function installPWA() {
         const { outcome } = await deferredPrompt.userChoice;
         deferredPrompt = null;
         document.getElementById('install-container').style.display = 'none';
+    } else {
+        // Fallback info
+        showToast('Para instalar: Menú Navegador -> Agregar a Inicio', 'info');
+        alert("Si no ves la instalación automática:\n\n1. Abre el menú del navegador (3 puntos).\n2. Busca 'Instalar aplicación' o 'Agregar a pantalla principal'.");
     }
 }
