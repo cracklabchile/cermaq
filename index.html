@@ -22,13 +22,20 @@
     <!-- Libraries -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js')
+                .then(() => console.log('Service Worker Registered'));
+        }
+    </script>
 </head>
 
 <body>
 
     <nav>
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <img src="Cermaq_logo.png" alt="Cermaq" class="nav-logo">
+        <div style="display:flex; align-items:center; gap:10px;">
+            <img src="Q.png" alt="Logo" class="nav-logo">
+            <h1>CERMAQ</h1>
         </div>
         <div class="status-pill">
             <span id="status-dot" class="dot"></span>
