@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Inventario</title>
+    <title>Bodega Cermaq | Scanner Premium</title>
 
     <!-- Fonts & Icons -->
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -22,6 +22,7 @@
     <!-- Libraries -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('./sw.js')
@@ -33,7 +34,7 @@
 <body>
 
     <nav>
-        <img src="Cermaq_logo2.png" alt="Logo" class="nav-logo">
+        <img src="Cermaq_logo.png" alt="Logo" class="nav-logo">
         <button class="icon-btn" id="btn-admin-login" onclick="toggleAdmin()">
             <span class="material-icons-round">admin_panel_settings</span>
         </button>
@@ -89,7 +90,7 @@
         </div>
 
         <!-- Install App Section (Universally Visible at Bottom) -->
-        <div id="install-container" style="margin-top: 2rem; text-align: center;">
+        <div id="install-container" style="margin-top: 2rem; text-align: center; display: none;">
             <p style="color: var(--text-light); margin-bottom: 0.5rem; font-size: 0.9rem;">¿Uso frecuente?</p>
             <button class="btn btn-primary" onclick="installPWA()"
                 style="width: 100%; background: var(--text); box-shadow: none;">
@@ -103,16 +104,10 @@
     <div id="toast-container" class="toast-container"></div>
 
     <!-- Product Modal -->
-    <!-- Product Modal -->
     <div class="modal-backdrop" id="modal-product">
         <div class="modal-content">
             <div class="product-header">
-                <!-- Editable Name Field -->
-                <label class="input-label" style="font-size:0.8rem; color:var(--text-light);">Descripción /
-                    Nombre</label>
-                <textarea id="p-name-input" class="input-field" rows="2"
-                    style="font-weight:700; font-size:1.2rem; margin-bottom:0.5rem; resize:none;"></textarea>
-
+                <h2 id="p-name">Cargando...</h2>
                 <div class="product-meta">ID: <span id="p-id">-</span></div>
             </div>
 

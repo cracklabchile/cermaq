@@ -3,7 +3,7 @@
  */
 const CONFIG = {
     // Default API URL from user
-    DEFAULT_API: 'https://script.google.com/macros/s/AKfycbwUTbAh_Du_k1qfQhzfbrHdt_Kh2sVLWc9Rj5Uwej7xNRadoOYSg06PYeumGAqGLKRs/exec',
+    DEFAULT_API: 'https://script.google.com/macros/s/AKfycbzpgUkMhdDmLSaejzg_Faql7j-fpojIx0mx98w1sQzl9Wdbfjx1YRdVZij9VLnF5sCK/exec',
     STORAGE_KEY: 'cermaq_inventory_url',
 };
 
@@ -227,8 +227,7 @@ function addToCart(type) {
 
     const qty = parseInt(document.getElementById('qty-input').value);
     const id = currentProduct.id;
-    // Capture edited name
-    const name = document.getElementById('p-name-input').value || currentProduct.nombre;
+    const name = currentProduct.nombre;
     const comment = document.getElementById('tx-comment').value;
     const price = document.getElementById('tx-price').value;
 
@@ -333,8 +332,7 @@ async function processCart() {
                 quantity: item.qty,
                 user: "WebUser",
                 comment: item.comment || "",
-                price: item.price || "",
-                nombre: item.name // SEND NAME TO UPDATE IF CHANGED
+                price: item.price || ""
             });
 
             if (result.status === 'success') {
@@ -423,6 +421,10 @@ async function openLabelMaker() {
     const container = document.getElementById('label-container');
     container.innerHTML = '<div style="text-align: center; color: #94a3b8; grid-column: 1/-1;">Cargando inventario...</div>';
 
+    // Clear previous actions if any
+    const oldActions = document.getElementById('label-actions');
+    if (oldActions) oldActions.remove();
+
     try {
         const response = await fetch(getApiUrl());
         const products = await response.json();
@@ -440,7 +442,6 @@ async function openLabelMaker() {
             card.className = 'qr-label';
 
             // Generate content
-            // We use a container for the QR to append it safely
             const qrContainer = document.createElement('div');
             qrContainer.className = 'qr-code-img';
 
@@ -452,7 +453,7 @@ async function openLabelMaker() {
                 <div class="qr-id">ID: ${p.id}</div>
             `;
 
-            // Generate QR using CLIENT-SIDE LIB (Infinite & Dynamic)
+            // Generate QR using CLIENT-SIDE LIB
             const qrDiv = document.createElement('div');
             qrDiv.id = `qr-gen-${p.id}`;
             qrDiv.className = "qr-div"; // styling hook
@@ -462,6 +463,7 @@ async function openLabelMaker() {
 
             // Generate immediately
             setTimeout(() => {
+                qrDiv.innerHTML = '';
                 new QRCode(qrDiv, {
                     text: String(p.id),
                     width: 128,
@@ -470,7 +472,7 @@ async function openLabelMaker() {
                     colorLight: "#ffffff",
                     correctLevel: QRCode.CorrectLevel.H
                 });
-            }, 10);
+            }, 50);
 
             // Allow selection
             card.onclick = function () {
@@ -479,16 +481,39 @@ async function openLabelMaker() {
             }
         });
 
-        // Add Print Selected Button
+        // Add Action Buttons Container
+        const actionsDiv = document.createElement('div');
+        actionsDiv.id = "label-actions";
+        actionsDiv.className = "grid-cols-2 no-print";
+        actionsDiv.style.marginTop = "1rem";
+        actionsDiv.style.gap = "1rem";
+
+        // Print Button
         const btnPrint = document.createElement('button');
         btnPrint.id = "btn-print-labels";
-        btnPrint.className = "btn btn-primary no-print";
-        btnPrint.style.marginTop = "1rem";
+        btnPrint.className = "btn btn-secondary";
         btnPrint.style.width = "100%";
         btnPrint.innerHTML = '<span class="material-icons-round">print</span> Imprimir (Todos)';
         btnPrint.onclick = printLabels;
 
-        document.getElementById('modal-labels').querySelector('.modal-content').appendChild(btnPrint);
+        // PDF Button
+        const btnPdf = document.createElement('button');
+        btnPdf.id = "btn-pdf-labels";
+        btnPdf.className = "btn btn-primary";
+        btnPdf.style.width = "100%";
+        btnPdf.innerHTML = '<span class="material-icons-round">picture_as_pdf</span> PDF (Todos)';
+        btnPdf.onclick = downloadPdfLabels;
+
+        actionsDiv.appendChild(btnPrint);
+        actionsDiv.appendChild(btnPdf);
+
+        // Append to modal content (ensure we don't duplicate if function called multiple times)
+        const content = document.getElementById('modal-labels').querySelector('.modal-content');
+        // Remove old standalone print button if exists
+        const oldBtn = content.querySelector('#btn-print-labels');
+        if (oldBtn && oldBtn.parentElement === content) oldBtn.remove();
+
+        content.appendChild(actionsDiv);
 
     } catch (e) {
         console.error(e);
@@ -500,13 +525,13 @@ async function openLabelMaker() {
 function updatePrintButton() {
     const container = document.getElementById('label-container');
     const selected = container.querySelectorAll('.qr-label.selected').length;
-    const btn = document.getElementById('btn-print-labels');
+    const btnPrint = document.getElementById('btn-print-labels');
+    const btnPdf = document.getElementById('btn-pdf-labels');
 
-    if (selected > 0) {
-        btn.innerHTML = `<span class="material-icons-round">print</span> Imprimir Seleccionados (${selected})`;
-    } else {
-        btn.innerHTML = '<span class="material-icons-round">print</span> Imprimir (Todos)';
-    }
+    const suffix = selected > 0 ? ` (${selected})` : " (Todos)";
+
+    if (btnPrint) btnPrint.innerHTML = `<span class="material-icons-round">print</span> Imprimir${suffix}`;
+    if (btnPdf) btnPdf.innerHTML = `<span class="material-icons-round">picture_as_pdf</span> PDF${suffix}`;
 }
 
 function printLabels() {
@@ -525,6 +550,85 @@ function printLabels() {
     } else {
         window.print();
     }
+}
+
+async function downloadPdfLabels() {
+    if (!window.jspdf) {
+        showToast("Librería PDF no disponible", "error");
+        return;
+    }
+
+    showToast("Generando PDF...", "info");
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    const container = document.getElementById('label-container');
+    let items = Array.from(container.querySelectorAll('.qr-label'));
+    const selected = container.querySelectorAll('.qr-label.selected');
+
+    if (selected.length > 0) items = Array.from(selected);
+
+    let x = 10;
+    let y = 10;
+    const boxWidth = 60;
+    const boxHeight = 75;
+    const marginX = 5;
+    const marginY = 5;
+    const colCount = 3;
+    let col = 0;
+
+    for (const item of items) {
+        // Check Page Break
+        if (y + boxHeight > 280) {
+            doc.addPage();
+            y = 10;
+            col = 0;
+            x = 10;
+        }
+
+        const title = item.querySelector('h3').innerText;
+        const id = item.querySelector('.qr-id').innerText.replace('ID: ', '').trim();
+
+        let imgData = null;
+        const img = item.querySelector('.qr-div img');
+        if (img && img.src) {
+            imgData = img.src;
+        } else {
+            const canvas = item.querySelector('.qr-div canvas');
+            if (canvas) imgData = canvas.toDataURL('image/png');
+        }
+
+        if (imgData) {
+            doc.setDrawColor(200);
+            doc.setLineWidth(0.5);
+            doc.rect(x, y, boxWidth, boxHeight);
+
+            // Title
+            doc.setFontSize(10);
+            doc.setTextColor(0);
+            const splitTitle = doc.splitTextToSize(title, boxWidth - 4);
+            doc.text(splitTitle, x + 2, y + 8);
+
+            // QR
+            doc.addImage(imgData, 'PNG', x + (boxWidth - 40) / 2, y + 20, 40, 40);
+
+            // ID
+            doc.setFontSize(14);
+            doc.setFont('helvetica', 'bold');
+            doc.text(id, x + boxWidth / 2, y + boxHeight - 5, { align: 'center' });
+        }
+
+        col++;
+        x += boxWidth + marginX;
+        if (col >= colCount) {
+            col = 0;
+            x = 10;
+            y += boxHeight + marginY;
+        }
+    }
+
+    doc.save("Cermaq_Etiquetas.pdf");
+    showToast("PDF Descargado", "success");
 }
 
 
@@ -601,8 +705,7 @@ async function openProductModal(idOrData) {
     currentProduct = product;
 
     // UI
-    // Update Input instead of H2
-    document.getElementById('p-name-input').value = product.nombre;
+    document.getElementById('p-name').innerText = product.nombre;
     document.getElementById('p-id').innerText = product.id;
     document.getElementById('p-stock').innerText = product.stock;
 
@@ -669,23 +772,15 @@ function handleSearch() {
     }
 }
 
-// Install PWA Logic
+// Install PWA
 let deferredPrompt;
-
-// 1. Listen for the browser event
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    // It's already visible in HTML, but we ensure it
+    // Show universally at the bottom
     const installContainer = document.getElementById('install-container');
     if (installContainer) installContainer.style.display = 'block';
 });
-
-// 2. Hide if already installed (Standalone mode)
-if (window.matchMedia('(display-mode: standalone)').matches) {
-    const installContainer = document.getElementById('install-container');
-    if (installContainer) installContainer.style.display = 'none';
-}
 
 async function installPWA() {
     if (deferredPrompt) {
@@ -693,9 +788,5 @@ async function installPWA() {
         const { outcome } = await deferredPrompt.userChoice;
         deferredPrompt = null;
         document.getElementById('install-container').style.display = 'none';
-    } else {
-        // Fallback info
-        showToast('Para instalar: Menú Navegador -> Agregar a Inicio', 'info');
-        alert("Si no ves la instalación automática:\n\n1. Abre el menú del navegador (3 puntos).\n2. Busca 'Instalar aplicación' o 'Agregar a pantalla principal'.");
     }
 }

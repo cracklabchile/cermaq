@@ -64,16 +64,7 @@ function procesarMovimiento(datos) {
   const sheet = ss.getSheetByName(HOJA_INVENTARIO);
   const logSheet = ss.getSheetByName(HOJA_LOGS);
   
-  // IMPLEMENTACIÓN DE "FILA INDIA" (LOCK SERVICE)
-  const lock = LockService.getScriptLock();
-  try {
-    lock.waitLock(10000); // Esperar hasta 10 segundos por el turno
-  } catch (e) {
-    return respuestaJSON({ status: "error", message: "Servidor ocupado (Race Condition). Intenta de nuevo." });
-  }
-
-  try {
-    const idBusqueda = String(datos.id);
+  const idBusqueda = String(datos.id);
   const cantidad = parseInt(datos.quantity);
   const usuario = datos.user || "App";
   
@@ -111,11 +102,6 @@ function procesarMovimiento(datos) {
   
   // Guardamos el nuevo stock
   celdaStock.setValue(nuevoStock);
-
-  // ACTUALIZAR NOMBRE SI SE PROPORCIONA (Requisito User: "poder editar el nombre")
-  if (datos.nombre && datos.nombre !== data[filaEncontrada-1][KOL.NOMBRE]) {
-    sheet.getRange(filaEncontrada, KOL.NOMBRE + 1).setValue(datos.nombre);
-  }
   
   // Registramos en el Historial
   if (logSheet) {
@@ -132,14 +118,12 @@ function procesarMovimiento(datos) {
     ]);
   }
   
+  return respuestaJSON({ 
+    status: "success", 
+    message: "Actualizado correctamente", 
+    productName: data[filaEncontrada-1][KOL.NOMBRE],
     newStock: nuevoStock
   });
-
-  } catch (error) {
-    return respuestaJSON({ status: "error", message: error.toString() });
-  } finally {
-    lock.releaseLock(); // Liberar el turno siempre
-  }
 }
 
 function agregarProducto(datos) {
