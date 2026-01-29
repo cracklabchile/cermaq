@@ -237,8 +237,13 @@ function addToCart(type) {
 
     if (type === 'OUT') {
         const currentStock = parseInt(currentProduct.stock);
-        if (qty > currentStock) {
-            showToast(`Error: Stock insuficiente. Tienes ${currentStock}`, 'error');
+        // Calculate amount already in cart for this item
+        const inCart = cart.reduce((total, item) => {
+            return item.id === id && item.type === 'OUT' ? total + item.qty : total;
+        }, 0);
+
+        if ((qty + inCart) > currentStock) {
+            showToast(`Error: Stock insuficiente. Tienes ${currentStock} (En carrito: ${inCart})`, 'error');
             return;
         }
     }
