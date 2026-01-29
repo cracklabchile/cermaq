@@ -1,17 +1,28 @@
 :root {
-    --primary: #004B8D;
-    --primary-dark: #003666;
-    --accent: #00A9E0;
+    --primary: #0f172a;
+    /* Deep Navy */
+    --primary-light: #334155;
+    --accent: #38bdf8;
+    /* Cyan/Sky */
     --success: #10b981;
+    /* Emerald */
     --danger: #ef4444;
-    --bg-gradient: linear-gradient(135deg, #f6f8fd 0%, #e1e9f4 100%);
-    --surface: rgba(255, 255, 255, 0.9);
-    --glass: rgba(255, 255, 255, 0.7);
-    --glass-border: rgba(255, 255, 255, 0.5);
+    /* Red */
+    --bg-gradient: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+    /* Silver/Clean */
+    --surface: rgba(255, 255, 255, 0.7);
+    /* More transparent */
+    --glass-border: rgba(255, 255, 255, 0.4);
     --text: #1e293b;
     --text-light: #64748b;
-    --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
-    --radius: 20px;
+
+    /* Premium Shadows */
+    --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+    --radius: 24px;
+    /* Softer rounded corners */
 }
 
 body {
@@ -40,11 +51,10 @@ body.admin-mode .admin-only.btn {
 
 /* Glassmorphism Navigation */
 nav {
-    background: var(--glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: var(--surface);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border-bottom: 1px solid var(--glass-border);
-    padding: 1rem 1.5rem;
     padding: 1rem 1.5rem;
     display: flex;
     justify-content: center;
@@ -53,7 +63,7 @@ nav {
     position: sticky;
     top: 0;
     z-index: 50;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-sm);
 }
 
 nav h1 {
@@ -75,16 +85,21 @@ nav h1 {
     /* Smaller */
     width: auto;
     object-fit: contain;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+    /* Logo Pop */
 }
 
 /* Cleaner Badge */
 .status-pill {
-    padding: 6px 12px;
+    padding: 6px 16px;
     font-size: 0.75rem;
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(4px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: var(--surface);
+    backdrop-filter: blur(8px);
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--glass-border);
+    border-radius: 50px;
+    letter-spacing: 0.5px;
+    font-weight: 600;
 }
 
 main {
@@ -105,7 +120,9 @@ main {
     border-radius: var(--radius);
     padding: 1.5rem;
     box-shadow: var(--shadow);
-    border: 1px solid white;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(12px);
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* Scanner Area */
@@ -114,35 +131,78 @@ main {
     border-radius: var(--radius);
     overflow: hidden;
     position: relative;
-    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    aspect-ratio: 1/1;
+    box-shadow: var(--shadow-lg);
     aspect-ratio: 1/1;
     display: flex;
     align-items: center;
     justify-content: center;
     /* Fancy border for scanner */
-    border: 4px solid white;
-    box-shadow: 0 20px 40px -10px rgba(0, 75, 141, 0.15);
+    border: none;
 }
 
 #reader {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    opacity: 0.9;
+    /* Slight dim for focus */
 }
 
+/* Minimalist Corners Overlay */
 .scan-overlay {
     position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    background: rgba(0, 0, 0, 0.3);
+    inset: 20px;
+    z-index: 10;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    box-shadow: 0 0 0 4000px rgba(0, 0, 0, 0.3);
+    /* Focus mask */
 }
+
+.scan-overlay::before,
+.scan-overlay::after {
+    content: '';
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--accent);
+    filter: drop-shadow(0 0 8px var(--accent));
+    transition: all 0.3s;
+}
+
+.scan-overlay::before {
+    top: -2px;
+    left: -2px;
+    border-right: none;
+    border-bottom: none;
+    border-top-left-radius: 20px;
+}
+
+.scan-overlay::after {
+    bottom: -2px;
+    right: -2px;
+    border-left: none;
+    border-top: none;
+    border-bottom-right-radius: 20px;
+}
+
+/* Add two more corners with pseudo elements on a nested internal span if needed, 
+   but for simplicity/lightweight we stick to top-left bottom-right or 
+   just use a better image background. Let's keep it simple: 
+   Just the box-shadow mask is distinct enough + text. */
+.scan-overlay .scan-text {
+    position: absolute;
+    bottom: -40px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    letter-spacing: 0.5px;
+}
+
 
 /* Status Indicator */
 .status-pill {
@@ -189,19 +249,11 @@ main {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    gap: 10px;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     position: relative;
     overflow: hidden;
-    /* Gradient for Primary Button */
-    background: var(--primary);
-}
-
-.btn-primary {
-    background: linear-gradient(135deg, var(--primary) 0%, #002D5C 100%);
-    color: white;
-    box-shadow: 0 8px 20px rgba(0, 75, 141, 0.25);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    letter-spacing: 0.5px;
 }
 
 .btn:active {
@@ -209,29 +261,45 @@ main {
 }
 
 .btn-primary {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     color: white;
-    box-shadow: 0 4px 15px rgba(0, 75, 141, 0.3);
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .btn-primary:hover {
-    background: var(--primary-dark);
+    box-shadow: 0 10px 25px rgba(15, 23, 42, 0.4);
+    transform: translateY(-2px);
+}
+
+.btn-primary:active {
+    transform: scale(0.95);
 }
 
 .btn-success {
-    background: var(--success);
+    background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
     color: white;
     box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .btn-success:hover {
-    background: #047857;
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+    transform: translateY(-2px);
 }
 
 .btn-secondary {
-    background: white;
+    background: var(--surface);
     color: var(--text);
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(4px);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-secondary:hover {
+    background: #fff;
+    border-color: #cbd5e1;
+    transform: translateY(-2px);
 }
 
 .grid-cols-2 {
@@ -560,6 +628,8 @@ main {
     text-overflow: ellipsis;
     display: -webkit-box;
     -webkit-line-clamp: 2;
+    line-clamp: 2;
+    /* Standard */
     -webkit-box-orient: vertical;
 }
 
